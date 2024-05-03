@@ -7,6 +7,7 @@ import ma.enset.mvchospital.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -55,10 +57,12 @@ public class PatientController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public String save(Model model, @Valid Patient patient, BindingResult bindingResult,
                        @RequestParam(defaultValue = "0") int page,
-                       @RequestParam(defaultValue = "") String keyword){
+                       @RequestParam(defaultValue = "") String keyword,
+                       @RequestParam("dateNaissance") @DateTimeFormat(pattern = "yyyy-MM-dd") Date date){
         if(bindingResult.hasErrors()) return "formPatients";
+        patient.setDatenaissance(date);
         patientRepository.save(patient);
-        return "redirect:/index?page=" + page + "&keyword=" + keyword;
+        return "redirect:/user/index?page="+page+"&keyword="+keyword;
     }
 
     @GetMapping("/admin/editPatients")
